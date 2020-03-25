@@ -201,13 +201,38 @@ lemma add_comm : forall (m : ℕ) (n : ℕ),
  end 
 
 
-lemma add_assoc (l m n : ℕ) :
-  add (add l m) n = add l (add m n) :=
-sorry
+lemma add_assoc : forall (l m n : ℕ),
+  add (add l m) n = add l (add m n) 
 
-lemma mul_comm (m n : ℕ) :
-  mul m n = mul n m :=
-sorry
+| nat.zero m n := by repeat {rw add_zero}  
+|(nat.succ l') m n := begin  
+  repeat {rw add_succ_n}, rw (add_assoc l' m n),
+end
+   
+lemma mul_zero : forall n, mul 0 n = 0
+| nat.zero := refl 0
+| (nat.succ n') := begin simp [mul], 
+   rw [add_zero, mul_zero] end
+
+lemma mul_one : forall n, mul 1 n = n
+| nat.zero := refl 0 
+| (nat.succ n') := begin 
+    simp[mul], rw mul_one,  rw add_succ_n,
+    rw add_zero
+end
+
+lemma mul_succ : forall m n, mul (nat.succ m) n = add n (mul n m)
+| nat.zero n := begin simp[mul, add], rw mul_one end
+|(nat.succ m') n := begin
+    repeat {simp [mul]},     
+ end
+
+lemma mul_comm : forall (m n : ℕ), 
+  mul m n = mul n m 
+| nat.zero n := begin  simp [mul], rw mul_zero end
+| (nat.succ m') n := begin 
+  simp [mul], rw mul_succ
+end 
 
 lemma mul_assoc (l m n : ℕ) :
   mul (mul l m) n = mul l (mul m n) :=

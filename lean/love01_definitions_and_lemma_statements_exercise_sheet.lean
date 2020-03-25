@@ -12,8 +12,32 @@ namespace LoVe
 /- 1.1. Define the function `fib` that computes the Fibonacci numbers. -/
 
 def fib : ℕ → ℕ
-:= sorry
+| 0 := 0
+| 1 := 1
+|(nat.succ (nat.succ n)) := 
+   fib n + fib (nat.succ n)
 
+/- 
+powM a n m | n == 1 = a 
+   | n == 2 = matmul a a m
+   | even n = powM ( matmul a a m ) ( div n 2 ) m 
+   | otherwise = matmul a ( powM ( matmul a a m ) ( div n 2 ) m ) m -/
+
+def matmul : vector ℕ 3 → vector ℕ 3 → vector ℕ 3
+| ⟨[a, b, c], Hu⟩ ⟨[d, e, f], Hv⟩ := 
+    let y := a*e + b*f in 
+    let z := b*e + c*f in 
+    ⟨[y + z, y, z], by simp⟩
+
+#eval matmul ⟨[1, 2, 3], by simp ⟩ ⟨[1, 2, 3], by simp ⟩ 
+/- a^n mod m -/
+def pow  :  vector ℕ 3 → ℕ → vector ℕ 3
+| ⟨_, _⟩ 0 := ⟨[1, 1, 1], by simp⟩
+| ⟨a, Hp⟩ 1 := ⟨a, Hp⟩
+| ⟨a, Hp⟩ /- even n -/ := pow 
+
+def fib_fast : ℕ → ℕ 
+| 
 /- 1.2. Check that your function works as expected. -/
 
 #reduce fib 0  -- expected: 0
