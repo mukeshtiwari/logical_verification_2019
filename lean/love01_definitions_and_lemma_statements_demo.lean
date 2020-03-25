@@ -6,7 +6,7 @@ namespace LoVe
 
 
 /- Types and Terms -/
-
+#eval 1 + 1
 #check ℕ
 #check ℤ
 
@@ -161,9 +161,45 @@ def eval (env : string → ℤ) : aexp → ℤ
 
 namespace sorry_lemmas
 
-lemma add_comm (m n : ℕ) :
-  add m n = add n m :=
-sorry
+lemma add_zero : forall (n : ℕ), 
+  add 0 n = n 
+ | nat.zero := refl 0
+ | (nat.succ n') := 
+   begin 
+     simp[add], apply add_zero 
+   end
+
+lemma add_succ_zero : forall (n : ℕ),
+  add (nat.succ n) nat.zero = nat.succ (add n nat.zero)
+  | nat.zero := refl 1
+  | (nat.succ n') := by simp[add]   
+
+set_option trace.eqn_compiler.elim_match true
+
+lemma add_succ_n : forall (n m : ℕ), 
+  add (nat.succ n) m = nat.succ (add n m) 
+| nat.zero nat.zero := refl 1
+| nat.zero (nat.succ m') := begin 
+   simp[add], rw add_zero, 
+   rw [add_succ_n 0 m', add_zero] end
+| (nat.succ n') nat.zero := by simp[add]
+| (nat.succ n') (nat.succ m') := begin 
+    simp[add], rw [add_succ_n (nat.succ n') m']
+ end 
+
+lemma add_comm : forall (m : ℕ) (n : ℕ), 
+  add m n = add n m 
+ | nat.zero nat.zero := refl nat.zero 
+ | nat.zero (nat.succ n') := begin 
+   simp[add], rw add_zero end
+ | (nat.succ m') nat.zero := begin
+     simp[add], apply (add_comm m' 0)
+   end 
+ | (nat.succ m') (nat.succ n') := begin 
+    simp[add], rw [add_succ_n], rw add_succ_n,
+    rw add_comm
+ end 
+
 
 lemma add_assoc (l m n : ℕ) :
   add (add l m) n = add l (add m n) :=
